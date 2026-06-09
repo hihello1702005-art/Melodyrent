@@ -1,0 +1,3 @@
+import { createSlice } from '@reduxjs/toolkit';
+const slice=createSlice({name:'player',initialState:{tracks:[],index:0,playing:false,volume:.75,repeat:false,shuffle:false},reducers:{loadPlaylist:(s,a)=>{s.tracks=a.payload||[];s.index=0;s.playing=!!s.tracks.length},play:s=>{s.playing=true},pause:s=>{s.playing=false},next:s=>{s.index=s.shuffle?Math.floor(Math.random()*Math.max(s.tracks.length,1)):(s.index+1)%Math.max(s.tracks.length,1)},prev:s=>{s.index=(s.index-1+s.tracks.length)%Math.max(s.tracks.length,1)},setVolume:(s,a)=>{s.volume=a.payload},toggleRepeat:s=>{s.repeat=!s.repeat},toggleShuffle:s=>{s.shuffle=!s.shuffle}}});
+export const {loadPlaylist,play,pause,next,prev,setVolume,toggleRepeat,toggleShuffle}=slice.actions; export default slice.reducer;

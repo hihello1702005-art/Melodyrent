@@ -1,0 +1,3 @@
+import { Canvas } from '@react-three/fiber'; import { OrbitControls, Float, Environment } from '@react-three/drei';
+function CutePlaceholder(){ return <Float speed={2} rotationIntensity={1} floatIntensity={1.4}><mesh><torusKnotGeometry args={[1.2,.35,128,16]}/><meshStandardMaterial color="#b8a7ff" roughness=.25 metalness=.35/></mesh></Float> }
+export default function ProductViewer(){ return <div className="h-[420px] overflow-hidden rounded-[2rem] glass"><Canvas camera={{position:[0,0,5]}}><ambientLight intensity={.8}/><directionalLight position={[4,4,4]} intensity={2}/><CutePlaceholder/><Environment preset="city"/><OrbitControls enableZoom enablePan={false}/></Canvas></div> }

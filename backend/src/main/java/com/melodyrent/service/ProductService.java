@@ -1,0 +1,10 @@
+package com.melodyrent.service;
+import com.melodyrent.dto.ProductDtos.*; import com.melodyrent.entity.*; import com.melodyrent.exception.ApiException; import com.melodyrent.mapper.ProductMapper; import com.melodyrent.repository.*; import lombok.RequiredArgsConstructor; import org.springframework.data.domain.*; import org.springframework.http.HttpStatus; import org.springframework.stereotype.Service; import org.springframework.transaction.annotation.Transactional;
+@Service @RequiredArgsConstructor
+public class ProductService {
+  private final ProductRepository products; private final CategoryRepository categories; private final UserRepository users; private final ProductMapper mapper;
+  public Page<ProductCard> search(String q, Long categoryId, String city, Pageable pageable){ return products.search(q, categoryId, city, pageable).map(p -> mapper.toCard(p, 4.8)); }
+  public ProductCard get(Long id){ var p=products.findById(id).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"Product not found")); return mapper.toCard(p, 4.8); }
+  @Transactional public ProductCard create(ProductRequest req, String ownerEmail){ var owner=users.findByEmail(ownerEmail).orElseThrow(); var cat=categories.findById(req.categoryId()).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"Category not found")); var p=Product.builder().title(req.title()).description(req.description()).basePricePerDay(req.basePricePerDay()).city(req.city()).inventory(req.inventory()).category(cat).owner(owner).model3dUrl(req.model3dUrl()).approved(owner.getRoles().stream().anyMatch(r -> r.getName()==RoleName.ADMIN)).available(true).build(); if(req.imageUrls()!=null) req.imageUrls().forEach(url -> p.getImages().add(ProductImage.builder().url(url).product(p).build())); if(req.musicTracks()!=null) req.musicTracks().forEach(t -> p.getMusicTracks().add(MusicTrack.builder().title(t.title()).artist(t.artist()).url(t.url()).durationSeconds(t.durationSeconds()).product(p).build())); return mapper.toCard(products.save(p), 0.0); }
+  public Product entity(Long id){ return products.findById(id).orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND,"Product not found")); }
+}
