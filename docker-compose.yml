@@ -1,0 +1,28 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: melodyrent
+      MYSQL_USER: melodyrent
+      MYSQL_PASSWORD: melodyrent
+      MYSQL_ROOT_PASSWORD: root
+    ports: ["3306:3306"]
+    volumes: ["mysql-data:/var/lib/mysql", "./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql"]
+  backend:
+    build: ./backend
+    depends_on: [mysql]
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/melodyrent?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: melodyrent
+      DB_PASSWORD: melodyrent
+      JWT_SECRET: change-me-to-a-very-long-256-bit-secret-for-production-use-only
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:8080
+    ports: ["8080:8080"]
+  frontend:
+    build: ./frontend
+    depends_on: [backend]
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    ports: ["5173:80"]
+volumes:
+  mysql-data:

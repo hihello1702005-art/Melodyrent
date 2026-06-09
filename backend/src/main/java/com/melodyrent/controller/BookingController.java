@@ -1,0 +1,4 @@
+package com.melodyrent.controller;
+import com.melodyrent.dto.BookingDtos.*; import com.melodyrent.service.BookingService; import jakarta.validation.Valid; import lombok.RequiredArgsConstructor; import org.springframework.security.core.Authentication; import org.springframework.web.bind.annotation.*; import java.util.List;
+@RestController @RequestMapping("/bookings") @RequiredArgsConstructor
+public class BookingController { private final BookingService bookings; @PostMapping("/quote") PriceQuote quote(@Valid @RequestBody BookingRequest req){ return bookings.quote(req); } @PostMapping BookingResponse book(@Valid @RequestBody BookingRequest req, Authentication auth){ return bookings.book(req, auth.getName()); } @GetMapping("/me") List<BookingResponse> mine(Authentication auth){ return bookings.mine(auth.getName()); } }
