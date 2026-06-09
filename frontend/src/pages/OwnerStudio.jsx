@@ -1,0 +1,2 @@
+import PageShell from '../components/PageShell';
+export default function OwnerStudio(){ return <PageShell><div className="py-10"><h1 className="text-4xl font-black">Owner Studio</h1><div className="mt-6 grid gap-5 md:grid-cols-4">{['Inventory','Add Product','Bookings','Earnings','Analytics','Cloudinary Uploads'].map(x=><div className="glass rounded-[2rem] p-6" key={x}><b>{x}</b><p className="mt-2 text-sm opacity-70">Manage listings, music, images, and income.</p></div>)}</div></div></PageShell> }

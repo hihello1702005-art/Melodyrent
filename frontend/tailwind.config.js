@@ -1,0 +1,1 @@
+export default { darkMode: 'class', content: ['./index.html','./src/**/*.{js,jsx}'], theme: { extend: { colors: { lavender:'#b8a7ff', blush:'#ff9ed8', mint:'#9ff5d0', skysoft:'#9edcff', ink:'#15122b' }, boxShadow: { glow:'0 24px 80px rgba(184,167,255,.35)' }, fontFamily:{ display:['Inter','ui-sans-serif','system-ui'] } } }, plugins: [] }
