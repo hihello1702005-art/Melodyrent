@@ -13,7 +13,7 @@ MelodyRent is a production-ready full-stack rental marketplace that blends Airbn
 - Dynamic pricing with weekend, holiday, peak-season, and admin-configurable multipliers.
 - Interactive 360° product viewer built with React Three Fiber and Three.js.
 - Cloudinary integration for image and music uploads.
-- MySQL 8 schema, Dockerfiles, Docker Compose, seed data, API documentation, and environment configuration.
+- MySQL 8 schema, seed data, API documentation, and environment configuration.
 
 ## Architecture Overview
 
@@ -41,7 +41,7 @@ React, Vite, Tailwind CSS, Redux Toolkit, React Router, Axios, Framer Motion, Re
 Java 21, Spring Boot 3, Spring Security, JWT, Spring WebSocket, Spring Data JPA, Hibernate, Maven, Springdoc OpenAPI, Cloudinary SDK, and MySQL Connector/J.
 
 ### Database and Infrastructure
-MySQL 8, Docker, Docker Compose, and Nginx for the frontend container.
+MySQL 8 for persistence, plus standard local Java/Maven and Node/Vite tooling for development.
 
 ## Folder Structure
 
@@ -74,7 +74,6 @@ frontend/src
  ├── contexts
  └── utils
 database/
-docker-compose.yml
 ```
 
 ## Database Design
@@ -201,27 +200,45 @@ Images can use `resourceType=image`; music files can use `resourceType=video` or
 
 ## Environment Variables
 
-### Backend
+Environment templates are committed, while real secret-bearing `.env` files are intentionally ignored by Git. Copy the appropriate template before running locally:
+
+```bash
+cp .env.example .env
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
+```
+
+### Root / Full-stack Local Development
+
+The root `.env.example` is the main template for full-stack local development. It includes MySQL, backend, frontend, JWT, CORS, and Cloudinary variables.
 
 ```env
+MYSQL_DATABASE=melodyrent
+MYSQL_USER=melodyrent
+MYSQL_PASSWORD=melodyrent
+MYSQL_ROOT_PASSWORD=root
 DB_URL=jdbc:mysql://localhost:3306/melodyrent?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
 DB_USERNAME=melodyrent
 DB_PASSWORD=melodyrent
+SERVER_PORT=8080
+SPRING_PROFILES_ACTIVE=dev
 JWT_SECRET=replace-with-a-long-256-bit-production-secret
 JWT_ACCESS_MINUTES=30
 JWT_REFRESH_DAYS=14
-CORS_ALLOWED_ORIGINS=http://localhost:5173
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:4173
+VITE_API_URL=http://localhost:8080/api
 CLOUDINARY_CLOUD_NAME=demo
 CLOUDINARY_API_KEY=demo
 CLOUDINARY_API_SECRET=demo
-SERVER_PORT=8080
 ```
 
-### Frontend
+### Backend-only
 
-```env
-VITE_API_URL=http://localhost:8080/api
-```
+Use `backend/.env.example` when running only the API. Export those variables in your shell or load them with your IDE/run configuration.
+
+### Frontend-only
+
+Use `frontend/.env.example` as the Vite template and copy it to `frontend/.env.local`.
 
 ## Installation Guide
 
@@ -260,27 +277,16 @@ Seeded demo accounts:
 | Admin | `admin@melodyrent.local` | `Password123!` |
 | Owner | `owner@melodyrent.local` | `Password123!` |
 
-## Docker Setup
-
-```bash
-docker compose up --build
-```
-
-Services:
-
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:8080/api`
-- Swagger: `http://localhost:8080/api/docs`
-- MySQL: `localhost:3306`
-
 ## Deployment Guide
 
 - Use a managed MySQL 8 database.
+- Build the backend with `mvn clean package` and deploy the generated JAR to your Java 21 runtime.
+- Build the frontend with `npm run build` and deploy the generated `dist/` folder to your static host.
 - Set `spring.profiles.active=prod`.
 - Use a strong `JWT_SECRET` from a secret manager.
 - Set exact CORS origins for production domains.
-- Deploy backend as a Java 21 container or JVM service.
-- Deploy frontend as static Vite assets behind a CDN or Nginx.
+- Deploy backend as a Java 21 JVM service, platform service, or your preferred artifact format.
+- Deploy frontend as static Vite assets behind a CDN or static hosting provider.
 - Configure Cloudinary upload presets and account-level security.
 
 ## User Roles & Permissions
@@ -295,7 +301,6 @@ Services:
 
 - Backend: `mvn test`
 - Frontend: `npm run build`
-- Docker: `docker compose config`
 - API docs: open `/api/docs` after backend startup.
 
 ## Troubleshooting Guide
@@ -318,7 +323,7 @@ Services:
 
 ## Performance Optimizations
 
-- Frontend static build served by Nginx.
+- Frontend static build can be deployed to any CDN or static hosting provider.
 - Paginated product search.
 - Lazy-ready route structure.
 - Cloudinary-hosted media delivery.
